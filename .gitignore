@@ -1,0 +1,10 @@
+# Python and IDE
+.DS_Store/
+.idea/
+__pycache__/
+ServiceProviders/__pycache__/
+Errors/__pycache__/
+Core/__pycache__/
+
+# Logs 
+Logging/last_request_log.txt
