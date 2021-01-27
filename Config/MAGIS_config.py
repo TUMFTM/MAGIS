@@ -66,6 +66,11 @@ ISOCHRONE_DOC = "https://github.com/TUMFTM/MAGIS"
 GEOCODING_DOC = "https://github.com/TUMFTM/MAGIS",
 REVERSE_GEOCODING_DOC = "https://github.com/TUMFTM/MAGIS",
 OSMEXP_DOC = "https://github.com/TUMFTM/MAGIS"
+LOOKUP_DOC = "https://github.com/TUMFTM/MAGIS"
+MAPMATCHING_DOC = "https://github.com/TUMFTM/MAGIS"
+TABLE_DOC = "https://github.com/TUMFTM/MAGIS"
+TRIP_DOC = "https://github.com/TUMFTM/MAGIS"
+TILE_DOC = "https://github.com/TUMFTM/MAGIS"
 
 ##############################
 ### ROUTING ALIASES        ###

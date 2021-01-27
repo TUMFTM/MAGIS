@@ -1,0 +1,7 @@
+gunicorn==20.0.4
+flask==1.1.2
+requests==2.25.1
+psycopg2-binary==2.8.6
+geopandas==0.8.2
+geojson==2.5.0
+sshtunnel==0.4.0
