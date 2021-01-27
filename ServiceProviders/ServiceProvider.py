@@ -15,7 +15,9 @@ __status__ = "alpha"
 
 class ServiceProvider:
 
-    def __init__(self):
+    def __init__(self, cfg):
+
+        self.cfg = cfg
 
         self.type = "serviceRequest"
 

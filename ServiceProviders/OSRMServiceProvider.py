@@ -3,7 +3,6 @@
 """
 
 from ServiceProviders.ServiceProvider import ServiceProvider
-from Config import MAGIS_config as cfg
 from flask import jsonify
 from Errors.MAGIS_error import MAGIS_error
 from Core.MAGIS_utils import Service, Service_type, ARBITRARY_CHOICE_NO_DEFAULT, ARBITRARY_CHOICE, BOOL_CHOICE_FALSE_DEFAULT, BOOL_CHOICE_TRUE_DEFAULT
@@ -19,9 +18,9 @@ __status__ = "alpha"
 
 class OSRMServiceProvider(ServiceProvider):
 
-    def __init__(self):
+    def __init__(self, cfg):
 
-        super().__init__()
+        super().__init__(cfg)
 
         self.type = Service_type.WEBSERVICE
 
@@ -86,7 +85,7 @@ class OSRMServiceProvider(ServiceProvider):
 
         # Assembling base query
         base_query = "{protocol}{host}:{port}/{service}/{version}/{profile}/{coordinates}?"
-        base_query = base_query.format(protocol='http://', host=cfg.OSRM_HOST, port=cfg.OSRM_PORT, service=self.opts["service"], version=self.opts["version"], profile=self.opts["profile"], coordinates=self.opts["coordinates"])
+        base_query = base_query.format(protocol='http://', host=self.cfg.OSRM_HOST, port=self.cfg.OSRM_PORT, service=self.opts["service"], version=self.opts["version"], profile=self.opts["profile"], coordinates=self.opts["coordinates"])
 
         # Identifying relevant opts for the service
         relevant_opts = self.service_opts[service]

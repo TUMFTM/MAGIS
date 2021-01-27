@@ -22,19 +22,18 @@ __status__ = "alpha"
 
 class RequestHandler:
 
-    def __init__(self):
+    def __init__(self, cfg):
 
         # This dictionary is used to map the services to instances of the corresponding request classes
         self.handle_dict = {
 
-            Service.ROUTING: OSRMServiceProvider(),
-            Service.NEAREST: OSRMServiceProvider(),
-            # glb.Service.ISOCRHONE: graphhopperRequest,
-            Service.GEOCODING: NominatimServiceProvider(),
-            Service.REVERSE_GEOCODING: NominatimServiceProvider(),
-            Service.LOOKUP: NominatimServiceProvider(),
-            Service.MAPMATCHING: OSRMServiceProvider(),
-            Service.OSMEXP: OSMexplorerServiceProvider()
+            Service.ROUTING: OSRMServiceProvider(cfg),
+            Service.NEAREST: OSRMServiceProvider(cfg),
+            Service.GEOCODING: NominatimServiceProvider(cfg),
+            Service.REVERSE_GEOCODING: NominatimServiceProvider(cfg),
+            Service.LOOKUP: NominatimServiceProvider(cfg),
+            Service.MAPMATCHING: OSRMServiceProvider(cfg),
+            #Service.OSMEXP: OSMexplorerServiceProvider(cfg)
 
             }
 

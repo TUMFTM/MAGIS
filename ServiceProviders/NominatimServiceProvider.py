@@ -3,7 +3,6 @@
 """
 
 from ServiceProviders.ServiceProvider import ServiceProvider
-from Config import MAGIS_config as cfg
 from flask import jsonify
 from Core.MAGIS_utils import Service, Service_type, ARBITRARY_CHOICE, ARBITRARY_CHOICE_NO_DEFAULT
 
@@ -18,9 +17,9 @@ __status__ = "alpha"
 
 class NominatimServiceProvider(ServiceProvider):
 
-    def __init__(self):
+    def __init__(self, cfg):
 
-        super().__init__()
+        super().__init__(cfg)
 
         self.type = Service_type.WEBSERVICE
 
@@ -92,7 +91,7 @@ class NominatimServiceProvider(ServiceProvider):
 
         # Assembling base query
         base_query = "{protocol}{host}:{port}/{service}?"
-        base_query = base_query.format(protocol='http://', host=cfg.NOMINATIM_HOST, port=cfg.NOMINATIM_PORT, service=self.opts["service"])
+        base_query = base_query.format(protocol='http://', host=self.cfg.NOMINATIM_HOST, port=self.cfg.NOMINATIM_PORT, service=self.opts["service"])
 
         # Identifying relevant opts for the service
         relevant_opts = self.service_opts[service]

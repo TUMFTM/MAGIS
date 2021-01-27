@@ -8,3 +8,6 @@ Core/__pycache__/
 
 # Logs 
 Logging/last_request_log.txt
+
+# User Config
+Config/user/

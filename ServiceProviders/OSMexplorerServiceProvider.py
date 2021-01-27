@@ -4,7 +4,6 @@
 
 from ServiceProviders.ServiceProvider import ServiceProvider
 from flask import jsonify
-from Config import MAGIS_config as cfg
 import psycopg2
 import geopandas as gpd
 import json
@@ -31,10 +30,10 @@ class OSMexplorerServiceProvider(ServiceProvider):
         self.RELATIONS_BASE_QUERY = "SELECT * FROM {relation_table_name} WHERE id = {id}"
         self.WAY_NODES_BASE_QUERY = "SELECT way_id FROM way_nodes WHERE node_id={id}"
 
-    def __init__(self):
+    def __init__(self, cfg):
 
         # Initialize standard ServiceProvider attributes
-        super().__init__()
+        super().__init__(cfg)
 
         # Set own type to callable
         self.type = Service_type.CALLABLE
@@ -83,15 +82,15 @@ class OSMexplorerServiceProvider(ServiceProvider):
     def _establish_db_con(self):
 
         server = None
-        database = cfg.OSM_EXPLORER_DB_NAME
-        user = cfg.OSM_EXPLORER_DB_USER
-        password = cfg.OSM_EXPLORER_DB_USER_PASSWORD
-        host = cfg.OSM_EXPLORER_DB_HOST
-        port = cfg.OSM_EXPLORER_DB_PORT
-        ssh_user = cfg.OSM_EXPLORER_SSH_USER
-        ssh_password = cfg.OSM_EXPLORER_SSH_USER_PASSWORD
+        database = self.cfg.OSM_EXPLORER_DB_NAME
+        user = self.cfg.OSM_EXPLORER_DB_USER
+        password = self.cfg.OSM_EXPLORER_DB_USER_PASSWORD
+        host = self.cfg.OSM_EXPLORER_DB_HOST
+        port = self.cfg.OSM_EXPLORER_DB_PORT
+        ssh_user = self.cfg.OSM_EXPLORER_SSH_USER
+        ssh_password = self.cfg.OSM_EXPLORER_SSH_USER_PASSWORD
 
-        if cfg.OSM_EXPLORER_USE_SSH:
+        if self.cfg.OSM_EXPLORER_USE_SSH:
 
             try:
                 server = SSHTunnelForwarder(host, ssh_username=ssh_user,
