@@ -2,7 +2,6 @@
 """Provides helper functions used throughout MAGIS
 """
 
-from Config import MAGIS_config as cfg
 from enum import Enum
 
 __author__ = "Lennart Adenaw"
@@ -31,7 +30,7 @@ def apitag2service(api_tag_str, dict):
 
 def liststring2list(list_str):
 
-    list_str = list_str.strip()  # Get rid of leading and traling whitespaces
+    list_str = list_str.strip()  # Get rid of leading and trailing whitespaces
 
     if not (list_str[0] == "[" and list_str[-1] == "]"):
         # It is not a list
@@ -76,24 +75,6 @@ class Service(Enum):
     TILE = 10
     OSMEXP = 11
 
-# Service.ISOCRHONE: whitelist_isochrone,\
-SERVICES_DICT = {
-
-        Service.ROUTING: cfg.whitelist_route,
-        Service.NEAREST: cfg.whitelist_nearest,
-        Service.GEOCODING: cfg.whitelist_geocode,
-        Service.REVERSE_GEOCODING: cfg.whitelist_reverse,
-        Service.LOOKUP: cfg.whitelist_lookup,
-        Service.MAPMATCHING: cfg.whitelist_mapmatch,
-        Service.TILE: cfg.whitelist_tile,
-        Service.TRIP: cfg.whitelist_trip,
-        Service.TABLE: cfg.whitelist_table,
-        Service.OSMEXP: cfg.whitelist_osmexp
-
-    }
-
-SERVICES_DICT_INV = invert_dict(SERVICES_DICT)
-
 # SERVICE TYPES
 class Service_type(Enum):
 
@@ -106,23 +87,6 @@ class Option(Enum):
 
     INI_FIRST = 1
     NOT_SET_DEFAULT = 2
-
-# DOCUMENTATION REROUTING
-DOC_REROUTE_DICT = {
-
-            Service.ROUTING:  cfg.ROUTE_DOC,
-            Service.NEAREST: cfg.NEAREST_DOC,
-            # Service.ISOCHRONE: cfg.ISOCHRONE,
-            Service.GEOCODING: cfg.GEOCODING_DOC,
-            Service.REVERSE_GEOCODING: cfg.REVERSE_GEOCODING_DOC,
-            Service.LOOKUP: cfg.LOOKUP_DOC,
-            Service.MAPMATCHING: cfg.MAPMATCHING_DOC,
-            Service.TABLE: cfg.TABLE_DOC,
-            Service.TRIP: cfg.TRIP_DOC,
-            Service.TILE: cfg.TILE_DOC,
-            Service.OSMEXP:cfg.OSMEXP_DOC
-
-        }
 
 # OPTION SETTINGS
 BOOL_CHOICE_FALSE_DEFAULT = ["false", "true"]

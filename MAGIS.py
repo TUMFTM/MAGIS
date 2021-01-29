@@ -4,7 +4,7 @@
 
 from flask import Flask, request, redirect
 from Core.RequestHandler import RequestHandler
-from Core.MAGIS_utils import apitag2service, SERVICES_DICT_INV, DOC_REROUTE_DICT
+from Core.MAGIS_utils import apitag2service
 from Errors.ErrorHandler import ErrorHandler
 from Errors.MAGIS_error import MAGIS_error
 from Config.io import MAGISConfigReader
@@ -25,14 +25,17 @@ def create_app():
 
     # Load user configuration
     cfgReader = MAGISConfigReader()
-    os.system("echo $PWD")
+    config_path = os.path.abspath("./Config/user/MAGIS_user_config.conf")
+    os.system("echo Starting MAGIS within $PWD")
+    os.system("echo Reading Config from {}".format(config_path))
     config, valid = cfgReader.read(os.path.abspath("./Config/user/MAGIS_user_config.conf"),
                                    config_template_path=os.path.abspath("./Config/MAGIS_config_template.conf"))
 
+    if not valid:
+        raise Exception("Please supply a user config matching the MAGIS_config_template.conf!")
+
     # Initialize error handler
     error_handler = ErrorHandler()
-    # Todo: Create error object, which logs all errors that occured. Make it writeable from everywhere in the GISAPI rather than passing error flags and error data around
-
 
     # Route index
     @app.route('/', methods=['GET', 'POST'])
@@ -46,34 +49,15 @@ def create_app():
     @app.route('/<apiTag>', methods=['GET', 'POST'])
     def serviceAPIRequest(apiTag):
 
-        request_method = request.method
-
-        # If the client issued a http-GET request
-        if request_method == "GET":
-
-            # Extract request arguments
-            json = {}
-            args = request.args
-
-        # If the client issued a http-POST request
-        elif request_method == "POST":
-
-            # Extract request arguments and uploaded json data
-            json = request.json
-            args = request.args
-
         # If a protocol other than http-GET or http-POST was used by the client, throw an error
-        else:
+        if request.method not in ["GET", "POST"]:
             return error_handler.handle(MAGIS_error.HTTP_UNKNOWN_REQUEST_METHOD, None)
-
-        # Merge potentially uploaded json data and arguments to one dictionary in any case also transform from immutable dict to dict
-        request_input = {**dict(json), **dict(args)}
 
         # Extract the requested api-tag (GIS service)
         apiTag_str = str(apiTag).lower()
 
         # Try to retrieve the correct MAGIS service
-        service = apitag2service(apiTag_str, SERVICES_DICT_INV)
+        service = apitag2service(apiTag_str, config.SERVICES_DICT_INV)
 
         # If there is no MAGIS service that goes by that name
         if service is None:
@@ -83,17 +67,7 @@ def create_app():
             # Initialize a requestHandler object that handles the incoming request
             req_hdl = RequestHandler(config)
 
-            # Extract geodata and options from the request_input dict. Store errors that eventually occur during extraction.
-            # TODO: Only extract data necessary for the service
-            data, options, err_flag, err_data = req_hdl.extractData(request_input)
-
-            # If data and options where extracted correctly (no error appeared):
-            if not err_flag:
-                out = req_hdl.handle(options, data, service=service)
-            else:
-                out = error_handler.handle(err_flag, err_data)
-
-        return out
+        return req_hdl.handle(request, service)
 
 
     # Route documentation
@@ -102,10 +76,10 @@ def create_app():
 
         apiTag_str = str(apiTag).lower()
 
-        service = apitag2service(apiTag_str, dict=SERVICES_DICT_INV)
+        service = apitag2service(apiTag_str, dict=config.SERVICES_DICT_INV)
 
         if service is not None:
-            return redirect(DOC_REROUTE_DICT[service], code=302)
+            return redirect(config.DOC_REROUTE_DICT[service], code=302)
         else:
             return redirect("http://lmgtfy.com/?q="+apiTag, code=302)
 
@@ -119,7 +93,7 @@ if __name__ == '__main__':
     config, valid = cfgReader.read(os.path.abspath("./Config/user/MAGIS_user_config.conf"),
                                    config_template_path=os.path.abspath("./Config/MAGIS_config_template.conf"))
 
-    # # Startup flask server
+    # Startup flask server
     # app = create_app()
     # app.run(debug=True, host=config.MAGIS_HOST,
     #         port=config.MAGIS_PORT)  # Flask development server -> Only for testing purposes

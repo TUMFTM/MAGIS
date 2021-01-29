@@ -54,23 +54,27 @@ class ServiceProvider:
 
             return True
 
+        else:
+            self.opts[opt_name] = val
+
         return False
 
-    def parseArgs(self, args):  # TODO: Test with lowercase and uppercase letters for every service
+    def loadRequest(self, request_dict):
 
         # For each arg passed via MAGIS
-        for arg in args.keys():
+        for arg in request_dict.keys():
+            cur_opt = arg
             # If there is a service option with the same name
-            if arg in self.opts.keys():
-                cur_opt = arg
-            # If there is no service option with the same name, try to translate the name
+            if cur_opt  in self.opts.keys():
+                pass
+            # If there is no service option with the same name, try to translate the name, otherwise just keep it as it is
             else:
-                cur_opt = self.translateOpt(arg)
+                if cur_opt in self.translation_dict.keys():
+                    cur_opt = self.translateOpt(arg)
+                else:
+                    pass
 
-            self.setOpt(cur_opt, args[arg])
-
-    def loadData(self, data):
-        return "Implement me in sub-class"
+            self.setOpt(cur_opt, request_dict[arg])
 
     def getQuery(self, service):
         return "Implement me in sub-class if child is a webservice"

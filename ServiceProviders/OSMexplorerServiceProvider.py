@@ -71,13 +71,6 @@ class OSMexplorerServiceProvider(ServiceProvider):
 
         self.iniOptions()
 
-    def loadData(self, data):
-
-        # No data needs to be loaded for the osm_explorer
-        no_error = False
-
-        return no_error
-
     def _establish_db_con(self):
 
         server = None

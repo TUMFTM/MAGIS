@@ -5,6 +5,7 @@
 from ServiceProviders.ServiceProvider import ServiceProvider
 from flask import jsonify
 from Core.MAGIS_utils import Service, Service_type, ARBITRARY_CHOICE, ARBITRARY_CHOICE_NO_DEFAULT
+import json
 
 __author__ = "Lennart Adenaw"
 __copyright__ = "Copyright 2019, Chair of Automotive Technology TU Munich"
@@ -89,6 +90,8 @@ class NominatimServiceProvider(ServiceProvider):
         # Setting service opt
         self.setOpt("service", self.services_strs[service])
 
+        self.parseData()
+
         # Assembling base query
         base_query = "{protocol}{host}:{port}/{service}?"
         base_query = base_query.format(protocol='http://', host=self.cfg.NOMINATIM_HOST, port=self.cfg.NOMINATIM_PORT, service=self.opts["service"])
@@ -108,12 +111,16 @@ class NominatimServiceProvider(ServiceProvider):
 
         return query
 
-    def loadData(self, data):
+    def parseData(self):
 
-        if "lat" in data.keys() and data["lat"] is not None:
-            # It is already ensured that lat and lon appear in pairs if they appear at all (see requestHandler)
-            self.setOpt("lat", data["lat"][-1])
-            self.setOpt("lon", data["lon"][-1])
+        # Todo: What if not?
+        if "coordinates" in self.opts.keys() and self.opts["coordinates"]:
+            coordinates = self.opts["coordinates"]
+            if type(coordinates) == str:
+                coordinates = json.loads(coordinates)
+
+            self.setOpt("lat", coordinates[0][1])
+            self.setOpt("lon", coordinates[0][0])
 
     def postprocess(self, r):
 

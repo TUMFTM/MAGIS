@@ -6,6 +6,7 @@
 import configparser
 from configparser import ExtendedInterpolation
 import json
+from Core.MAGIS_utils import Service, invert_dict
 
 __author__ = "Lennart Adenaw"
 __copyright__ = "Copyright 2021, Chair of Automotive Technology TU Munich"
@@ -106,3 +107,37 @@ class MAGISConfig:
         self.whitelist_trip = json.loads(configparser_config["ROUTING_ALIASES"]["whitelist_trip"])
         self.whitelist_tile = json.loads(configparser_config["ROUTING_ALIASES"]["whitelist_tile"])
         self.whitelist_osmexp = json.loads(configparser_config["ROUTING_ALIASES"]["whitelist_osmexp"])
+
+        self.SERVICES_DICT = {
+
+            Service.ROUTING: self.whitelist_route,
+            Service.NEAREST: self.whitelist_nearest,
+            Service.GEOCODING: self.whitelist_geocode,
+            Service.REVERSE_GEOCODING: self.whitelist_reverse,
+            Service.LOOKUP: self.whitelist_lookup,
+            Service.MAPMATCHING: self.whitelist_mapmatch,
+            Service.TILE: self.whitelist_tile,
+            Service.TRIP: self.whitelist_trip,
+            Service.TABLE: self.whitelist_table,
+            Service.OSMEXP: self.whitelist_osmexp
+
+        }
+
+        self.SERVICES_DICT_INV = invert_dict(self.SERVICES_DICT)
+
+        # DOCUMENTATION REROUTING
+        self.DOC_REROUTE_DICT = {
+
+            Service.ROUTING: self.ROUTE_DOC,
+            Service.NEAREST: self.NEAREST_DOC,
+            # Service.ISOCHRONE: cfg.ISOCHRONE,
+            Service.GEOCODING: self.GEOCODING_DOC,
+            Service.REVERSE_GEOCODING: self.REVERSE_GEOCODING_DOC,
+            Service.LOOKUP: self.LOOKUP_DOC,
+            Service.MAPMATCHING: self.MAPMATCHING_DOC,
+            Service.TABLE: self.TABLE_DOC,
+            Service.TRIP: self.TRIP_DOC,
+            Service.TILE: self.TILE_DOC,
+            Service.OSMEXP: self.OSMEXP_DOC
+
+        }

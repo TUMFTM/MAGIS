@@ -6,6 +6,7 @@ from ServiceProviders.ServiceProvider import ServiceProvider
 from flask import jsonify
 from Errors.MAGIS_error import MAGIS_error
 from Core.MAGIS_utils import Service, Service_type, ARBITRARY_CHOICE_NO_DEFAULT, ARBITRARY_CHOICE, BOOL_CHOICE_FALSE_DEFAULT, BOOL_CHOICE_TRUE_DEFAULT
+import json
 
 __author__ = "Lennart Adenaw"
 __copyright__ = "Copyright 2019, Chair of Automotive Technology TU Munich"
@@ -83,6 +84,8 @@ class OSRMServiceProvider(ServiceProvider):
         # Setting service opt
         self.setOpt("service", self.services_strs[service])
 
+        self.parseData()
+
         # Assembling base query
         base_query = "{protocol}{host}:{port}/{service}/{version}/{profile}/{coordinates}?"
         base_query = base_query.format(protocol='http://', host=self.cfg.OSRM_HOST, port=self.cfg.OSRM_PORT, service=self.opts["service"], version=self.opts["version"], profile=self.opts["profile"], coordinates=self.opts["coordinates"])
@@ -102,34 +105,29 @@ class OSRMServiceProvider(ServiceProvider):
 
         return query
 
-    def loadData(self, data):
+    def parseData(self):
 
-        # TODO: What if no lats and / or lons have been passed? -> Generate an error message
-
-        if "lat" in data.keys() and "lat" in data.keys():
-            lats = data["lat"]
-            lons = data["lon"]
+        if self.opts["coordinates"] is not None:
+            coordinates = self.opts["coordinates"]
+            if type(coordinates)==str:
+                coordinates = json.loads(coordinates)
 
             points = ""
 
-            for i, lat in enumerate(lats):
-                lon = lons[i]
-                if i != 0:
-                    point = ";"
-                else:
-                    point = ""
-                point += "{},{}".format(lon, lat)
-                points += point
+            for i, coordinate in enumerate(coordinates):
+                points += "{},{}".format(coordinate[1], coordinate[0])
+                if i!=len(coordinates)-1:
+                    points+=";"
 
             self.setOpt("coordinates", points)
 
         else:
             return MAGIS_error.DATA_MISSING_COORDINATES_ERROR
 
-        if "time" in data.keys() and data["time"] is not None:
+        if self.opts["timestamps"] is not None:
             # If timestamps have been passed
 
-            times = data["time"]
+            times = self.opts["timestamps"]
 
             time_str = ""
 
