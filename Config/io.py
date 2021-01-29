@@ -79,6 +79,8 @@ class MAGISConfig:
         self.OSM_EXPLORER_DB_NAME = configparser_config["DEPLOYMENT"]["OSM_EXPLORER_DB_NAME"]
         self.OSM_EXPLORER_DB_PORT = int(configparser_config["DEPLOYMENT"]["OSM_EXPLORER_DB_PORT"])
 
+        self.OSM_SCHEMA = configparser_config["DEPLOYMENT"]["OSM_SCHEMA"]
+
         self.GUNICORN_PATH = configparser_config["DEPLOYMENT"]["GUNICORN_PATH"]
 
         # Service documentation links

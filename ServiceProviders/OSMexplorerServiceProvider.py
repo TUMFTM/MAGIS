@@ -22,12 +22,12 @@ __status__ = "alpha"
 
 class OSMexplorerServiceProvider(ServiceProvider):
 
-    def _definebasequeries(self):
-        self.NODES_BASE_QUERY = "SELECT * FROM {node_table_name} WHERE id = {id}"
-        self.NODES_LIST_BASE_QUERY = "SELECT * FROM {node_table_name} WHERE id in ({ids})"
-        self.WAYS_BASE_QUERY = "SELECT * FROM {way_table_name} WHERE id = {id}"
-        self.RELATIONS_BASE_QUERY = "SELECT * FROM {relation_table_name} WHERE id = {id}"
-        self.WAY_NODES_BASE_QUERY = "SELECT way_id FROM way_nodes WHERE node_id={id}"
+    def _definebasequeries(self, cfg):
+        self.NODES_BASE_QUERY = "SELECT * FROM {osm_schema}.nodes WHERE id = {id}".format(osm_schema=cfg.OSM_SCHEMA)
+        self.NODES_LIST_BASE_QUERY = "SELECT * FROM {osm_schema}.nodes WHERE id in ({ids})".format(osm_schema=cfg.OSM_SCHEMA)
+        self.WAYS_BASE_QUERY = "SELECT * FROM {osm_schema}.ways WHERE id = {id}".format(osm_schema=cfg.OSM_SCHEMA)
+        self.RELATIONS_BASE_QUERY = "SELECT * FROM {osm_schema}.relations WHERE id = {id}".format(osm_schema=cfg.OSM_SCHEMA)
+        self.WAY_NODES_BASE_QUERY = "SELECT way_id FROM {osm_schema}.way_nodes WHERE node_id={id}".format(osm_schema=cfg.OSM_SCHEMA)
 
     def __init__(self, cfg):
 
@@ -38,7 +38,7 @@ class OSMexplorerServiceProvider(ServiceProvider):
         self.type = Service_type.CALLABLE
 
         # Define base queries for sql requests
-        self._definebasequeries()
+        self._definebasequeries(cfg)
 
         # Establish database connetion
         self.con, self.server = self._establish_db_con()
@@ -99,10 +99,10 @@ class OSMexplorerServiceProvider(ServiceProvider):
 
         # TODO: get this working for lists of ids
         if type(id) == int:
-            node_query = self.NODES_BASE_QUERY.format(node_table_name="nodes", id=id)
+            node_query = self.NODES_BASE_QUERY.format(id=id)
             node = gpd.GeoDataFrame.from_postgis(node_query, self.con, geom_col='geom')
         elif type(id) == list and all(isinstance(x, int) for x in id):
-            node_query = self.NODES_LIST_BASE_QUERY.format(node_table_name="nodes", ids=str(id).replace("[", "").replace("]", ""))
+            node_query = self.NODES_LIST_BASE_QUERY.format(ids=str(id).replace("[", "").replace("]", ""))
             node = gpd.GeoDataFrame.from_postgis(node_query, self.con, geom_col='geom')
         else:
             raise Exception("Supplied id must be an integer or a list of integers")
@@ -227,7 +227,7 @@ class OSMexplorerServiceProvider(ServiceProvider):
             raise Exception("Supplied id must be an integer")
 
         if type(id) == int:
-            way_query = self.WAYS_BASE_QUERY.format(way_table_name="ways", id=id)
+            way_query = self.WAYS_BASE_QUERY.format(id=id)
             way = pd.read_sql(way_query, self.con)
         else:
             raise Exception("Supplied id must be an integer")
