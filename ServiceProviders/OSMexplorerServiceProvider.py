@@ -8,7 +8,6 @@ import psycopg2
 import geopandas as gpd
 import json
 import geojson
-from sshtunnel import SSHTunnelForwarder
 import pandas as pd
 from Core.MAGIS_utils import Service, Service_type, ARBITRARY_CHOICE_NO_DEFAULT, ARBITRARY_CHOICE
 
@@ -87,29 +86,13 @@ class OSMexplorerServiceProvider(ServiceProvider):
         password = self.cfg.OSM_EXPLORER_DB_USER_PASSWORD
         host = self.cfg.OSM_EXPLORER_DB_HOST
         port = self.cfg.OSM_EXPLORER_DB_PORT
-        ssh_user = self.cfg.OSM_EXPLORER_SSH_USER
-        ssh_password = self.cfg.OSM_EXPLORER_SSH_USER_PASSWORD
 
-        if self.cfg.OSM_EXPLORER_USE_SSH:
 
-            try:
-                server = SSHTunnelForwarder(host, ssh_username=ssh_user,
-                                            ssh_password=ssh_password,
-                                            remote_bind_address=('127.0.0.1', port))
-                server.start()
-                local_bind_address = server.local_bind_port
-                con = psycopg2.connect(database=database, user=user,
-                                       password=password, host='127.0.0.1', port=local_bind_address)
-            except:
-                raise Exception("Could not establish a connection with the config-file provided")
-
-        else:
-
-            try:
-                con = psycopg2.connect(database=database, user=user,
-                                       password=password, host=host, port=port)
-            except:
-                raise Exception("Could not establish a connection with the config-file provided")
+        try:
+            con = psycopg2.connect(database=database, user=user,
+                                   password=password, host=host, port=port)
+        except:
+            raise Exception("Could not establish a connection with the config-file provided")
 
         return con, server
 
@@ -117,7 +100,6 @@ class OSMexplorerServiceProvider(ServiceProvider):
         con.close()
 
         if server is not None:
-            # If ssh tunneling has been used, stop it
             server.stop()
 
     def _nodeid2node(self, id):
